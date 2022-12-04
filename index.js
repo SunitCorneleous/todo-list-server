@@ -51,6 +51,21 @@ async function run() {
 			const singleTodo = await todoCollections.findOne(query);
 			res.send(singleTodo);
 		});
+
+		// Update Todo Status by ID
+		app.put('/todo/:id', async (req, res) => {
+			const id = req.params.id;
+			const updatedDoc = { $set: { status: true } };
+			const filter = { _id: ObjectId(id) };
+			const options = { upsert: true };
+
+			const result = await todoCollections.updateOne(
+				filter,
+				updatedDoc,
+				options
+			);
+			res.send(result);
+		});
 	} finally {
 	}
 }
