@@ -1,44 +1,57 @@
-const express = require("express");
+const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require("mongodb");
-require("dotenv").config();
-const cors = require("cors");
+const { MongoClient, ServerApiVersion } = require('mongodb');
+require('dotenv').config();
+const cors = require('cors');
 
 // middleware
 app.use(express.json());
 app.use(cors());
 
-app.get("/", (req, res) => {
-  res.send("<h1>todo list server is running</h1>");
+app.get('/', (req, res) => {
+	res.send('<h1>todo list server is running</h1>');
 });
 
 // mongodb config
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.jjvalws.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.jjvalws.mongodb.net/?retryWrites=true&w=majority`;
+
+// My MongoDB Config.
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@jpt-todo.phnn47z.mongodb.net/?retryWrites=true&w=majority`;
+
 const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+	serverApi: ServerApiVersion.v1,
 });
 
 async function run() {
-  try {
-    const todoCollections = client.db("todoList").collection("todos");
+	try {
+		const todoCollections = client.db('todoList').collection('todos');
 
-    // add a todo to db
-    app.post("/todo", async (req, res) => {
-      const todo = req.body;
+		// add a todo to db
+		app.post('/todo', async (req, res) => {
+			const todo = req.body;
 
-      const result = await todoCollections.insertOne(todo);
+			const result = await todoCollections.insertOne(todo);
 
-      res.send(result);
-    });
-  } finally {
-  }
+			res.send(result);
+		});
+
+		// Get all User Todo By User Email
+		app.get('/todo', async (req, res) => {
+			const userEmail = req.query.email;
+			const query = { email: userEmail };
+
+			const allTodo = await todoCollections.find(query).toArray();
+			res.send(allTodo);
+		});
+	} finally {
+	}
 }
 
-run().catch(err => console.log(err));
+run().catch((err) => console.log(err));
 
 app.listen(port, () => {
-  console.log("server is running");
+	console.log('server is running');
 });
