@@ -4,6 +4,7 @@ const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const cors = require('cors');
+const { query } = require('express');
 
 // middleware
 app.use(express.json());
@@ -64,6 +65,14 @@ async function run() {
 				updatedDoc,
 				options
 			);
+			res.send(result);
+		});
+
+		// Delete Single Todo by ID
+		app.delete('/todo/:id', async (req, res) => {
+			const id = req.params.id;
+			const filter = { _id: ObjectId(id) };
+			const result = await todoCollections.deleteOne(filter);
 			res.send(result);
 		});
 	} finally {
