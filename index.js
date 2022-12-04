@@ -6,7 +6,7 @@ require("dotenv").config();
 const cors = require("cors");
 
 // middleware
-app.use(express.json());
+app.use(express.json()); 
 app.use(cors());
 
 app.get("/", (req, res) => {
@@ -28,11 +28,12 @@ async function run() {
     // add a todo to db
     app.post("/todo", async (req, res) => {
       const todo = req.body;
-
       const result = await todoCollections.insertOne(todo);
-
       res.send(result);
     });
+
+
+    
   } finally {
   }
 }
@@ -40,5 +41,5 @@ async function run() {
 run().catch(err => console.log(err));
 
 app.listen(port, () => {
-  console.log("server is running");
+  console.log("server is running",port);
 });
